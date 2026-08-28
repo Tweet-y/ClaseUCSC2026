@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 223279903}
   - component: {fileID: 223279902}
+  - component: {fileID: 223279904}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -143,7 +144,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 223279901}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 12
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
@@ -216,6 +217,268 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &223279904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 223279901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
+--- !u!1 &1255570794
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1255570796}
+  - component: {fileID: 1255570795}
+  m_Layer: 0
+  m_Name: GeneradorAsteroides
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1255570795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255570794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ad7db8738d200f49b0c7f8eac4496c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GeneradorAsteroides
+  escalaGeneral: 0.22
+  multiplicadorVelocidadGlobal: 1.6
+  materialesVariados:
+  - {fileID: 2100000, guid: 8ce572cc80e4a4542b06ee5dc64f4a3c, type: 2}
+  - {fileID: 2100000, guid: 8d49b7338b55c3d44b6fc536ffa8f1ad, type: 2}
+  - {fileID: 2100000, guid: dd6fc07952d74c2428d6b6df6eecd258, type: 2}
+  - {fileID: 2100000, guid: 104b4c7750829d3449e75bd4c9f4aa59, type: 2}
+  - {fileID: 2100000, guid: c5fe62ddf4bb7644aaaf993ed8f9aae5, type: 2}
+  - {fileID: 2100000, guid: 755468e47d20e1646a30ed08dc02c9ae, type: 2}
+  - {fileID: 2100000, guid: c026d617125604b40ae321d5546578ef, type: 2}
+  - {fileID: 2100000, guid: 76a3ca1396f6dec46bacc5d3b13860f7, type: 2}
+  - {fileID: 2100000, guid: 60833281b2e436d4892638469ac7ea05, type: 2}
+  - {fileID: 2100000, guid: 64664aadc7672da4c804d9ae85455533, type: 2}
+  - {fileID: 2100000, guid: 6f53022fc0971c34abcc05a73c627903, type: 2}
+  - {fileID: 2100000, guid: 170254348807f5045abe6dc91fa629db, type: 2}
+  - {fileID: 2100000, guid: 17899a17ecbc5af458577619706d7119, type: 2}
+  - {fileID: 2100000, guid: a66e2a128f1a6cf40a2c07ae3c7e9b85, type: 2}
+  - {fileID: 2100000, guid: 73bc46724f8d8004c989cdf92f4a9902, type: 2}
+  - {fileID: 2100000, guid: 68d178ccb7d4c854ab101a41cbd5f649, type: 2}
+  - {fileID: 2100000, guid: a2f9e360438836e4680a2bb3c005161c, type: 2}
+  - {fileID: 2100000, guid: f250cd59ae5057a459a2ee38ecf11b51, type: 2}
+  - {fileID: 2100000, guid: 59ddaf0b08137c746bf06ef7ee5f184a, type: 2}
+  - {fileID: 2100000, guid: c79143b0d6739c9448e7836ffbf796ba, type: 2}
+  - {fileID: 2100000, guid: 00d50f978d01d914e8ef8179fd6eb64a, type: 2}
+  - {fileID: 2100000, guid: 20e4cf057c600f04eb0257bcbc7cfe25, type: 2}
+  - {fileID: 2100000, guid: dfa6de1631e5e0946bb53a3e7510cf41, type: 2}
+  - {fileID: 2100000, guid: b15f4c9eaf1428140a5c7c0cb1fad686, type: 2}
+  - {fileID: 2100000, guid: 4826d451338cccd49befb672cb9c1933, type: 2}
+  - {fileID: 2100000, guid: dc057b31df0f97245ba2e522a1898bed, type: 2}
+  - {fileID: 2100000, guid: cf8172e935d39294aa17e9348aa50127, type: 2}
+  - {fileID: 2100000, guid: 956699b20f8d66f4da211171e027e938, type: 2}
+  - {fileID: 2100000, guid: 0d5676d48fb87f14f953e5151571f879, type: 2}
+  - {fileID: 2100000, guid: 843219c1de3a00c43ae1a19123f5890e, type: 2}
+  - {fileID: 2100000, guid: 4321dd3b53da5eb41a38585710f15c97, type: 2}
+  - {fileID: 2100000, guid: 75b88a7ae0f30754ca4709a6f380d872, type: 2}
+  - {fileID: 2100000, guid: 07dbc31265bdd59498403bb57aff3705, type: 2}
+  - {fileID: 2100000, guid: c297a32c3099e07479cfabab9f30732a, type: 2}
+  - {fileID: 2100000, guid: f49294da54f38ec4d842929801c5838b, type: 2}
+  - {fileID: 2100000, guid: 25cae7cd49ecd234d97d823685fb8aa0, type: 2}
+  - {fileID: 2100000, guid: 20420331768a35e4db54bac675c22269, type: 2}
+  tipo1_Large01:
+    nombre: "1. Asteroide Grande 01 (Est\xE1ndar)"
+    tipo: 0
+    prefabBase: {fileID: 1377777665210604, guid: dcd709e04d3ab2341ab8df4db98c0892, type: 3}
+    escalaRelativa: 1
+    velocidadMin: 2.5
+    velocidadMax: 4.5
+    probabilidad: 4
+  tipo2_Large02:
+    nombre: "2. Asteroide Grande 02 (Angular/R\xE1pido)"
+    tipo: 1
+    prefabBase: {fileID: 1759591806171178, guid: 96b6762fce8f2f048aff578b7b0866e4, type: 3}
+    escalaRelativa: 0.9
+    velocidadMin: 4
+    velocidadMax: 6.5
+    probabilidad: 4
+  tipo3_LargeHoles:
+    nombre: 3. Asteroide Grande Agujeros/Pesado
+    tipo: 2
+    prefabBase: {fileID: 1690672080294742, guid: a99cb196b8fe68e4b82345faf3839d05, type: 3}
+    escalaRelativa: 1.15
+    velocidadMin: 1.8
+    velocidadMax: 3.2
+    probabilidad: 3
+  plano: 0
+  planoEspacio: {fileID: 1618998707}
+  limiteMinX: -20
+  limiteMaxX: 20
+  limiteMinZ_Y: -12
+  limiteMaxZ_Y: 12
+  alturaFija: 0
+  margenBordeSpawn: 2.5
+  oleadaInicial: 5
+  generacionContinua: 1
+  intervaloSpawn: 2.5
+  maxAsteroidesSimultaneos: 10
+--- !u!4 &1255570796
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255570794}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -37.71794, y: 0, z: 13.15439}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1618998703
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1618998707}
+  - component: {fileID: 1618998706}
+  - component: {fileID: 1618998705}
+  - component: {fileID: 1618998704}
+  m_Layer: 0
+  m_Name: Espacio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!64 &1618998704
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618998703}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1618998705
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618998703}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 8a9e650742698f2409f40197f60ab678, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1618998706
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618998703}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1618998707
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618998703}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.24334, y: -0, z: 0.12955}
+  m_LocalScale: {x: 50, y: 50, z: 50}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1804922447
 GameObject:
   m_ObjectHideFlags: 0
@@ -227,6 +490,7 @@ GameObject:
   - component: {fileID: 1804922450}
   - component: {fileID: 1804922449}
   - component: {fileID: 1804922448}
+  - component: {fileID: 1804922451}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -301,16 +565,62 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1804922447}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0.49367017, y: -0.5062646, z: 0.493662, w: -0.5062448}
+  m_LocalPosition: {x: -3.8641987, y: 158.97147, z: 0.0016947668}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1804922451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1804922447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1804922450}
   - {fileID: 223279903}
+  - {fileID: 1618998707}
+  - {fileID: 1255570796}
