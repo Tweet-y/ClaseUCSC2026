@@ -15,6 +15,13 @@ public class ControladorNave : MonoBehaviour
     public float tiempoInvulnerable;
     public bool estaActiva = true;
 
+    [Header("Iluminación de la Nave")]
+    public bool emitirLuz = true;
+    public Color colorLuz = new Color(0.2f, 0.85f, 1f, 1f);
+    public float intensidadLuz = 3.5f;
+    public float rangoLuz = 16f;
+    public Light luzNave;
+
     Rigidbody cuerpo;
     ControladorCanion canion;
     InputAction accionRotar;
@@ -74,6 +81,31 @@ public class ControladorNave : MonoBehaviour
             EnvoltorioEspacio wrap = gameObject.AddComponent<EnvoltorioEspacio>();
             wrap.plano = plano;
         }
+
+        ConfigurarLuz();
+    }
+
+    void ConfigurarLuz()
+    {
+        if (!emitirLuz)
+            return;
+
+        if (luzNave == null)
+            luzNave = GetComponentInChildren<Light>();
+
+        if (luzNave == null)
+        {
+            GameObject objLuz = new GameObject("LuzNave");
+            objLuz.transform.SetParent(transform, false);
+            Vector3 offset = (plano == Asteroide.PlanoDeJuego.XZ) ? new Vector3(0f, 1.8f, 0f) : new Vector3(0f, 0f, -1.8f);
+            objLuz.transform.localPosition = offset;
+            luzNave = objLuz.AddComponent<Light>();
+        }
+
+        luzNave.type = LightType.Point;
+        luzNave.color = colorLuz;
+        luzNave.intensity = intensidadLuz;
+        luzNave.range = rangoLuz;
     }
 
     void Update()
@@ -160,6 +192,9 @@ public class ControladorNave : MonoBehaviour
 
         foreach (Collider col in GetComponentsInChildren<Collider>())
             col.enabled = visible;
+
+        foreach (Light l in GetComponentsInChildren<Light>())
+            l.enabled = visible;
     }
 
     void CrearAcciones()

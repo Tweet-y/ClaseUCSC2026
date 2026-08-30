@@ -258,9 +258,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: SM_Ship_Fighter_04
       objectReference: {fileID: 0}
+    - target: {fileID: 3681223617118996127, guid: 88f2c004e6c5c4b9f82542a774db9224, type: 3}
+      propertyPath: m_Pitch
+      value: 1.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 3681223617118996127, guid: 88f2c004e6c5c4b9f82542a774db9224, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: 150277b5bd92b084ebc1f1ddbb710ab9, type: 3}
     - target: {fileID: 4392019814487477152, guid: 88f2c004e6c5c4b9f82542a774db9224, type: 3}
       propertyPath: fuerzaDisparo
       value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 7777753429188017504, guid: 88f2c004e6c5c4b9f82542a774db9224, type: 3}
+      propertyPath: intensidadLuz
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7845392281009850667, guid: 88f2c004e6c5c4b9f82542a774db9224, type: 3}
       propertyPath: m_LocalPosition.x
@@ -336,9 +348,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ad7db8738d200f49b0c7f8eac4496c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GeneradorAsteroides
-  escalaGeneral: 0.22
+  escalaGeneral: 1
   multiplicadorVelocidadGlobal: 1.6
-  clipExplosion: {fileID: 8300000, guid: da9926bfc6f384c4286387738ea23e22, type: 3}
   materialesVariados:
   - {fileID: 2100000, guid: 8ce572cc80e4a4542b06ee5dc64f4a3c, type: 2}
   - {fileID: 2100000, guid: 8d49b7338b55c3d44b6fc536ffa8f1ad, type: 2}
@@ -377,6 +388,11 @@ MonoBehaviour:
   - {fileID: 2100000, guid: f49294da54f38ec4d842929801c5838b, type: 2}
   - {fileID: 2100000, guid: 25cae7cd49ecd234d97d823685fb8aa0, type: 2}
   - {fileID: 2100000, guid: 20420331768a35e4db54bac675c22269, type: 2}
+  clipExplosion: {fileID: 8300000, guid: da9926bfc6f384c4286387738ea23e22, type: 3}
+  volumenExplosion: 0.415
+  pitchMinExplosion: 0.7
+  pitchMaxExplosion: 1.4
+  modularPitchPorTamanio: 1
   tipo1_Large01:
     nombre: "1. Asteroide Grande 01 (Est\xE1ndar)"
     tipo: 0
@@ -412,7 +428,8 @@ MonoBehaviour:
   oleadaInicial: 5
   generacionContinua: 1
   intervaloSpawn: 2.5
-  maxAsteroidesSimultaneos: 10
+  maxAsteroidesTotales: 8
+  maxAsteroidesGrandes: 3
 --- !u!4 &1255570796
 Transform:
   m_ObjectHideFlags: 0
@@ -535,7 +552,7 @@ Transform:
   m_GameObject: {fileID: 1618998703}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.24334, y: -0, z: 0.12955}
+  m_LocalPosition: {x: 9.24334, y: -5, z: 0.12955}
   m_LocalScale: {x: 50, y: 50, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -725,12 +742,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ControladorJuego
   vidas: 3
   puntaje: 0
+  nombreJugador: Jugador
+  textoNombre: {fileID: 0}
   textoPuntaje: {fileID: 0}
   textoVidas: {fileID: 0}
+  textoPuntajeFinal: {fileID: 0}
   panelFin: {fileID: 0}
   nave: {fileID: 0}
-  clipMusica: {fileID: 8300000, guid: c9fbf1293f0d2fc489155a76cf7a1d48, type: 3}
+  clipMusica: {fileID: 8300000, guid: 69f3270703fb9164b8bb99afd2f6c8c9, type: 3}
   volumenMusica: 0.2
+  clipReaparicion: {fileID: 8300000, guid: 90e7ce983566939418529a541dce2b47, type: 3}
+  volumenReaparicion: 0.8
+  clipPerderVida: {fileID: 8300000, guid: dab4f5c949aecde448b8295cda37ed47, type: 3}
+  volumenPerderVida: 0.8
 --- !u!82 &1900000004
 AudioSource:
   m_ObjectHideFlags: 0
@@ -741,7 +765,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c9fbf1293f0d2fc489155a76cf7a1d48, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: c9fbf1293f0d2fc489155a76cf7a1d48, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.2

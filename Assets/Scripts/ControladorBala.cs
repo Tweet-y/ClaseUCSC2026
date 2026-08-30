@@ -4,6 +4,8 @@ public class ControladorBala : MonoBehaviour
 {
     public float tiempoVida = 2f;
     public float timer = 0f;
+    public bool forzarAltura = true;
+    public float alturaFija = 0f;
 
     void Start()
     {
@@ -14,6 +16,13 @@ public class ControladorBala : MonoBehaviour
             cuerpo.constraints = RigidbodyConstraints.FreezePositionY
                 | RigidbodyConstraints.FreezeRotationX
                 | RigidbodyConstraints.FreezeRotationZ;
+        }
+
+        if (forzarAltura)
+        {
+            Vector3 pos = transform.position;
+            pos.y = alturaFija;
+            transform.position = pos;
         }
     }
 
@@ -41,3 +50,4 @@ public class ControladorBala : MonoBehaviour
         Destroy(gameObject);
     }
 }
+

@@ -17,11 +17,17 @@ public class ControladorJuego : MonoBehaviour
     public ControladorNave nave;
     public AudioClip clipMusica;
     public float volumenMusica = 0.2f;
+    public AudioClip clipReaparicion;
+    public float volumenReaparicion = 0.8f;
+    public AudioClip clipPerderVida;
+    public float volumenPerderVida = 0.8f;
+    AudioSource audioEfectos;
 
     void Awake()
     {
         instancia = this;
         IniciarMusica();
+        IniciarAudioEfectos();
     }
 
     void Start()
@@ -52,6 +58,7 @@ public class ControladorJuego : MonoBehaviour
 
         vidas--;
         ActualizarHUD();
+        ReproducirSonidoPerderVida();
 
         if (vidas <= 0)
         {
@@ -64,6 +71,16 @@ public class ControladorJuego : MonoBehaviour
         Invoke(nameof(Reaparecer), 1f);
     }
 
+    public void ReproducirSonidoPerderVida()
+    {
+        if (clipPerderVida != null)
+        {
+            if (audioEfectos == null)
+                IniciarAudioEfectos();
+            audioEfectos.PlayOneShot(clipPerderVida, volumenPerderVida);
+        }
+    }
+
     public void Reaparecer()
     {
         if (nave == null)
@@ -72,6 +89,17 @@ public class ControladorJuego : MonoBehaviour
         nave.ColocarEnCentro();
         nave.ActivarNave();
         nave.ActivarInvulnerabilidad(2f);
+        ReproducirSonidoReaparicion();
+    }
+
+    public void ReproducirSonidoReaparicion()
+    {
+        if (clipReaparicion != null)
+        {
+            if (audioEfectos == null)
+                IniciarAudioEfectos();
+            audioEfectos.PlayOneShot(clipReaparicion, volumenReaparicion);
+        }
     }
 
     public void FinDelJuego()
@@ -97,6 +125,13 @@ public class ControladorJuego : MonoBehaviour
             textoPuntaje.text = "Puntaje: " + puntaje;
         if (textoVidas != null)
             textoVidas.text = "Vidas: " + vidas;
+    }
+
+    void IniciarAudioEfectos()
+    {
+        audioEfectos = gameObject.AddComponent<AudioSource>();
+        audioEfectos.playOnAwake = false;
+        audioEfectos.loop = false;
     }
 
     void IniciarMusica()

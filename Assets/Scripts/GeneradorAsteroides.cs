@@ -32,7 +32,14 @@ public class GeneradorAsteroides : MonoBehaviour
     [Header("Variedad de Texturas y Materiales")]
     [Tooltip("Colección de materiales que se asignarán de forma aleatoria a los asteroides generados")]
     public Material[] materialesVariados;
+
+    [Header("Sonido de Explosión de Asteroides")]
     public AudioClip clipExplosion;
+    [Range(0f, 1f)]
+    public float volumenExplosion = 0.9f;
+    public float pitchMinExplosion = 0.7f;
+    public float pitchMaxExplosion = 1.4f;
+    public bool modularPitchPorTamanio = true;
 
     [Header("3 Tipos de Asteroides (Modelos Large)")]
     public TipoAsteroideConfig tipo1_Large01 = new TipoAsteroideConfig
@@ -81,10 +88,13 @@ public class GeneradorAsteroides : MonoBehaviour
 
     [Header("Frecuencia y Cantidad")]
     [Tooltip("Cantidad de asteroides que entran desde los bordes al iniciar")]
-    public int oleadaInicial = 4;
+    public int oleadaInicial = 3;
     public bool generacionContinua = true;
-    public float intervaloSpawn = 3.0f;
-    public int maxAsteroidesSimultaneos = 8;
+    public float intervaloSpawn = 4.0f;
+    [Tooltip("Límite absoluto de asteroides en pantalla contando grandes, medianos y pequeños")]
+    public int maxAsteroidesTotales = 8;
+    [Tooltip("Límite de asteroides grandes que pueden coexistir")]
+    public int maxAsteroidesGrandes = 3;
 
     private float _temporizador = 0f;
     private Camera _cam;
@@ -147,7 +157,11 @@ public class GeneradorAsteroides : MonoBehaviour
         if (_temporizador >= intervaloSpawn)
         {
             _temporizador = 0f;
-            if (ContarAsteroidesActivos() < maxAsteroidesSimultaneos)
+            int total = ContarAsteroidesTotales();
+            int grandes = ContarAsteroidesGrandes();
+
+            // Solo genera nuevos si no se ha alcanzado el límite total ni el de grandes
+            if (total < maxAsteroidesTotales && grandes < maxAsteroidesGrandes)
             {
                 SpawnAsteroideEnBorde();
             }
@@ -419,6 +433,10 @@ public class GeneradorAsteroides : MonoBehaviour
         ast.velocidadMin = config.velocidadMin;
         ast.velocidadMax = config.velocidadMax;
         ast.sonidoExplosion = clipExplosion;
+        ast.volumenExplosion = volumenExplosion;
+        ast.pitchMin = pitchMinExplosion;
+        ast.pitchMax = pitchMaxExplosion;
+        ast.modularPitchPorTamanio = modularPitchPorTamanio;
         ast.AplicarPropiedadesSegunTipo();
 
         float vel = Random.Range(config.velocidadMin, config.velocidadMax) * multiplicadorVelocidadGlobal;
@@ -488,6 +506,12 @@ public class GeneradorAsteroides : MonoBehaviour
             }
 
             ast.plano = plano;
+            ast.sonidoExplosion = clipExplosion;
+            ast.volumenExplosion = volumenExplosion;
+            ast.pitchMin = pitchMinExplosion;
+            ast.pitchMax = pitchMaxExplosion;
+            ast.modularPitchPorTamanio = modularPitchPorTamanio;
+
             EnvoltorioEspacio wrap = ast.GetComponent<EnvoltorioEspacio>();
             if (wrap == null)
             {
@@ -503,13 +527,24 @@ public class GeneradorAsteroides : MonoBehaviour
         }
     }
 
-    private int ContarAsteroidesActivos()
+    public int ContarAsteroidesTotales()
+    {
+        Asteroide[] todos = FindObjectsByType<Asteroide>(FindObjectsSortMode.None);
+        int total = 0;
+        foreach (var a in todos)
+        {
+            if (a != null && a.gameObject.activeInHierarchy) total++;
+        }
+        return total;
+    }
+
+    public int ContarAsteroidesGrandes()
     {
         Asteroide[] todos = FindObjectsByType<Asteroide>(FindObjectsSortMode.None);
         int grandes = 0;
         foreach (var a in todos)
         {
-            if (a.nivelTamanio == 3) grandes++;
+            if (a != null && a.gameObject.activeInHierarchy && a.nivelTamanio >= 3) grandes++;
         }
         return grandes;
     }

@@ -38,9 +38,16 @@ public class Asteroide : MonoBehaviour
     public float multiplicadorVelocidadHijo = 1.45f;
     public float anguloDispersion = 45f;
 
-    [Header("Efectos Opcionales")]
+    [Header("Efectos y Audio")]
     public GameObject prefabEfectoExplosion;
     public AudioClip sonidoExplosion;
+    [Range(0f, 1f)]
+    public float volumenExplosion = 0.9f;
+    [Tooltip("Rango de variación de tono (pitch)")]
+    public float pitchMin = 0.7f;
+    public float pitchMax = 1.4f;
+    [Tooltip("Modula el pitch según el tamaño: grandes graves, medianos balanceados, pequeños agudos")]
+    public bool modularPitchPorTamanio = true;
 
     private Vector3 _direccionMovimiento;
     private float _velocidadActual;
@@ -66,7 +73,7 @@ public class Asteroide : MonoBehaviour
         if (esfera == null)
             esfera = gameObject.AddComponent<SphereCollider>();
 
-        MeshFilter filtro = GetComponent<MeshFilter>();
+        MeshFilter filtro = GetComponentInChildren<MeshFilter>();
         if (filtro != null && filtro.sharedMesh != null)
         {
             Vector3 extents = filtro.sharedMesh.bounds.extents;
@@ -127,7 +134,7 @@ public class Asteroide : MonoBehaviour
             case TipoDeAsteroide.CrateresRapido:
                 velocidadMin *= 1.4f;
                 velocidadMax *= 1.5f;
-                cantidadFragmentos = 3; // El rápido genera más pedazos pequeños
+                cantidadFragmentos = 2;
                 multiplicadorVelocidadHijo = 1.45f;
                 break;
 
@@ -204,17 +211,14 @@ public class Asteroide : MonoBehaviour
     }
 
     /// <summary>
-    /// Divide el asteroide en fragmentos menores o lo destruye completamente si es nivel 1.
+    /// Divide el asteroide en fragmentos menores o lo destruye completamente si es nivel 1 (pequeño).
     /// </summary>
     public void Dividir()
     {
         if (_haSidoDestruido) return;
         _haSidoDestruido = true;
 
-        if (sonidoExplosion != null)
-        {
-            AudioSource.PlayClipAtPoint(sonidoExplosion, transform.position);
-        }
+        ReproducirSonidoExplosion();
 
         if (prefabEfectoExplosion != null)
         {
@@ -226,11 +230,12 @@ public class Asteroide : MonoBehaviour
             int puntos = 20;
             if (nivelTamanio == 2)
                 puntos = 50;
-            else if (nivelTamanio == 1)
+            else if (nivelTamanio <= 1)
                 puntos = 100;
             ControladorJuego.instancia.SumarPuntos(puntos);
         }
 
+        // Si es nivel 1 (pequeño), se destruye definitivamente y NO crea más fragmentos
         if (nivelTamanio > 1)
         {
             GenerarFragmentos();
@@ -239,9 +244,53 @@ public class Asteroide : MonoBehaviour
         Destroy(gameObject);
     }
 
+    public void ReproducirSonidoExplosion()
+    {
+        if (sonidoExplosion == null) return;
+
+        GameObject audioTemp = new GameObject("AudioExplosionAsteroide");
+        audioTemp.transform.position = transform.position;
+        AudioSource audioSource = audioTemp.AddComponent<AudioSource>();
+        audioSource.clip = sonidoExplosion;
+        audioSource.volume = volumenExplosion;
+        audioSource.spatialBlend = 0f; // Sonido global 2D para escucharse nítido
+
+        float pMin = pitchMin;
+        float pMax = pitchMax;
+
+        if (modularPitchPorTamanio)
+        {
+            if (nivelTamanio >= 3)
+            {
+                pMin = 0.60f;
+                pMax = 0.85f;
+            }
+            else if (nivelTamanio == 2)
+            {
+                pMin = 0.90f;
+                pMax = 1.20f;
+            }
+            else
+            {
+                pMin = 1.25f;
+                pMax = 1.65f;
+            }
+        }
+
+        float pitchElegido = Random.Range(pMin, pMax);
+        audioSource.pitch = pitchElegido;
+        audioSource.Play();
+
+        float duracion = (sonidoExplosion.length / Mathf.Max(0.1f, pitchElegido)) + 0.15f;
+        Destroy(audioTemp, duracion);
+    }
+
     private void GenerarFragmentos()
     {
-        for (int i = 0; i < cantidadFragmentos; i++)
+        int hijosACrear = Mathf.Min(2, cantidadFragmentos); // Máximo 2 fragmentos para evitar saturación
+        float factorEscalaHijo = (nivelTamanio == 3) ? 0.65f : 0.70f;
+
+        for (int i = 0; i < hijosACrear; i++)
         {
             GameObject nuevoAsteroideObj = null;
 
@@ -251,15 +300,14 @@ public class Asteroide : MonoBehaviour
                 if (prefabElegido != null)
                 {
                     nuevoAsteroideObj = Instantiate(prefabElegido, transform.position, Random.rotation);
-                    nuevoAsteroideObj.transform.localScale = transform.localScale * 0.55f;
+                    nuevoAsteroideObj.transform.localScale = transform.localScale * factorEscalaHijo;
                 }
             }
 
-            // Si no hay prefabs asignados, se clona y reduce automáticamente al 55% del tamaño del padre
             if (nuevoAsteroideObj == null)
             {
                 nuevoAsteroideObj = Instantiate(gameObject, transform.position, Random.rotation);
-                nuevoAsteroideObj.transform.localScale = transform.localScale * 0.55f;
+                nuevoAsteroideObj.transform.localScale = transform.localScale * factorEscalaHijo;
             }
 
             Asteroide hijo = nuevoAsteroideObj.GetComponent<Asteroide>();
@@ -268,12 +316,18 @@ public class Asteroide : MonoBehaviour
                 hijo = nuevoAsteroideObj.AddComponent<Asteroide>();
             }
 
+            hijo._haSidoDestruido = false; // Resetear estado destruido en el clon
             hijo.tipo = tipo;
-            hijo.nivelTamanio = nivelTamanio - 1;
+            hijo.nivelTamanio = Mathf.Max(1, nivelTamanio - 1); // 3->2 (mediano), 2->1 (pequeño)
+            hijo.cantidadFragmentos = 2;
             hijo.plano = plano;
             hijo.prefabsFragmentos = prefabsFragmentos;
             hijo.prefabEfectoExplosion = prefabEfectoExplosion;
             hijo.sonidoExplosion = sonidoExplosion;
+            hijo.volumenExplosion = volumenExplosion;
+            hijo.pitchMin = pitchMin;
+            hijo.pitchMax = pitchMax;
+            hijo.modularPitchPorTamanio = modularPitchPorTamanio;
 
             // Conservar la textura / material que tenía el asteroide padre
             Renderer rendPadre = GetComponentInChildren<Renderer>();
