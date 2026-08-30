@@ -111,3 +111,5 @@ Packages/
 graphify-out/
 *.md
 !README.md
+.claude/
+.serena/
