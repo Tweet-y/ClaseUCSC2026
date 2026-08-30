@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: 3681223617118996127}
   m_Layer: 0
   m_Name: SM_Ship_Fighter_04
-  m_TagString: Untagged
+  m_TagString: Jugador
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63,7 +63,7 @@ Transform:
   m_GameObject: {fileID: 3485788783406853850}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.5147743, y: 1.4017698, z: -4.0584173}
+  m_LocalPosition: {x: -4.5147743, y: 0, z: -4.0584173}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

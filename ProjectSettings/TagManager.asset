@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Bala
+  - Jugador
+  - Asteroide
   layers:
   - Default
   - TransparentFX

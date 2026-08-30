@@ -52,18 +52,31 @@ public class Asteroide : MonoBehaviour
     void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        if (_rb == null)
+        {
+            _rb = gameObject.AddComponent<Rigidbody>();
+            _rb.useGravity = false;
+        }
 
-        // Asegurar colisionador convexo para mallas 3D
         MeshCollider meshCol = GetComponent<MeshCollider>();
-        if (meshCol != null && !meshCol.convex)
+        if (meshCol != null)
+            meshCol.enabled = false;
+
+        SphereCollider esfera = GetComponent<SphereCollider>();
+        if (esfera == null)
+            esfera = gameObject.AddComponent<SphereCollider>();
+
+        MeshFilter filtro = GetComponent<MeshFilter>();
+        if (filtro != null && filtro.sharedMesh != null)
         {
-            meshCol.convex = true;
+            Vector3 extents = filtro.sharedMesh.bounds.extents;
+            esfera.radius = Mathf.Max(extents.x, extents.y, extents.z);
         }
-        else if (GetComponent<Collider>() == null)
-        {
-            SphereCollider sc = gameObject.AddComponent<SphereCollider>();
-            sc.radius = 1.2f;
-        }
+        else
+            esfera.radius = 1.2f;
+
+        if (!gameObject.CompareTag("Asteroide"))
+            gameObject.tag = "Asteroide";
     }
 
     void Start()
@@ -206,6 +219,16 @@ public class Asteroide : MonoBehaviour
         if (prefabEfectoExplosion != null)
         {
             Instantiate(prefabEfectoExplosion, transform.position, Quaternion.identity);
+        }
+
+        if (ControladorJuego.instancia != null)
+        {
+            int puntos = 20;
+            if (nivelTamanio == 2)
+                puntos = 50;
+            else if (nivelTamanio == 1)
+                puntos = 100;
+            ControladorJuego.instancia.SumarPuntos(puntos);
         }
 
         if (nivelTamanio > 1)

@@ -8,7 +8,12 @@ public class ControladorNave : MonoBehaviour
     public float fuerzaImpulso = 12f;
     public float velocidadMaxima = 12f;
     public float cooldownDisparo = 0.25f;
+    public float alturaFija = 0f;
     public Asteroide.PlanoDeJuego plano = Asteroide.PlanoDeJuego.XZ;
+
+    public bool estaInvulnerable;
+    public float tiempoInvulnerable;
+    public bool estaActiva = true;
 
     Rigidbody cuerpo;
     ControladorCanion canion;
@@ -16,6 +21,7 @@ public class ControladorNave : MonoBehaviour
     InputAction accionImpulso;
     InputAction accionDisparo;
     float timerDisparo;
+    Vector3 posicionInicial;
 
     void Awake()
     {
@@ -42,7 +48,14 @@ public class ControladorNave : MonoBehaviour
 
     void Start()
     {
+        gameObject.tag = "Jugador";
         cuerpo.useGravity = false;
+
+        Vector3 posicion = transform.position;
+        posicion.y = alturaFija;
+        transform.position = posicion;
+        posicionInicial = transform.position;
+
         if (plano == Asteroide.PlanoDeJuego.XZ)
         {
             cuerpo.constraints = RigidbodyConstraints.FreezePositionY
@@ -65,6 +78,16 @@ public class ControladorNave : MonoBehaviour
 
     void Update()
     {
+        if (tiempoInvulnerable > 0f)
+        {
+            tiempoInvulnerable -= Time.deltaTime;
+            if (tiempoInvulnerable <= 0f)
+                estaInvulnerable = false;
+        }
+
+        if (!estaActiva)
+            return;
+
         float rotacion = accionRotar.ReadValue<float>();
         transform.Rotate(0f, rotacion * velocidadRotacion * Time.deltaTime, 0f);
 
@@ -78,11 +101,65 @@ public class ControladorNave : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!estaActiva)
+            return;
+
         if (accionImpulso.IsPressed())
             cuerpo.AddForce(transform.forward * fuerzaImpulso, ForceMode.Acceleration);
 
         if (cuerpo.linearVelocity.magnitude > velocidadMaxima)
             cuerpo.linearVelocity = cuerpo.linearVelocity.normalized * velocidadMaxima;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (!estaActiva || estaInvulnerable)
+            return;
+
+        Asteroide asteroide = collision.gameObject.GetComponent<Asteroide>();
+        if (asteroide == null)
+            return;
+
+        asteroide.Dividir();
+        if (ControladorJuego.instancia != null)
+            ControladorJuego.instancia.PerderVida();
+    }
+
+    public void ActivarInvulnerabilidad(float segundos)
+    {
+        estaInvulnerable = true;
+        tiempoInvulnerable = segundos;
+    }
+
+    public void ColocarEnCentro()
+    {
+        cuerpo.linearVelocity = Vector3.zero;
+        cuerpo.angularVelocity = Vector3.zero;
+        transform.position = posicionInicial;
+        transform.rotation = Quaternion.identity;
+    }
+
+    public void ActivarNave()
+    {
+        estaActiva = true;
+        SetNaveVisible(true);
+    }
+
+    public void DesactivarNave()
+    {
+        estaActiva = false;
+        cuerpo.linearVelocity = Vector3.zero;
+        cuerpo.angularVelocity = Vector3.zero;
+        SetNaveVisible(false);
+    }
+
+    void SetNaveVisible(bool visible)
+    {
+        foreach (Renderer rend in GetComponentsInChildren<Renderer>())
+            rend.enabled = visible;
+
+        foreach (Collider col in GetComponentsInChildren<Collider>())
+            col.enabled = visible;
     }
 
     void CrearAcciones()

@@ -5,14 +5,6 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-/// <summary>
-/// Generador autónomo de asteroides en los bordes del mapa:
-/// - Usa los modelos Large solicitados (SM_Env_Asteroid_Large_01 y SM_Env_Asteroid_Large_02 con variaciones).
-/// - Escala reducida y configurable para que tengan un tamaño adecuado para el juego.
-/// - Generación exclusiva en los 4 bordes del mapa (Superior, Inferior, Izquierdo, Derecho).
-/// - Trayectorias cruzadas hacia el área central de juego.
-/// - Soporte para texturas y materiales variados aleatorios.
-/// </summary>
 public class GeneradorAsteroides : MonoBehaviour
 {
     [System.Serializable]
@@ -40,6 +32,7 @@ public class GeneradorAsteroides : MonoBehaviour
     [Header("Variedad de Texturas y Materiales")]
     [Tooltip("Colección de materiales que se asignarán de forma aleatoria a los asteroides generados")]
     public Material[] materialesVariados;
+    public AudioClip clipExplosion;
 
     [Header("3 Tipos de Asteroides (Modelos Large)")]
     public TipoAsteroideConfig tipo1_Large01 = new TipoAsteroideConfig
@@ -191,6 +184,12 @@ public class GeneradorAsteroides : MonoBehaviour
         if (materialesVariados == null || materialesVariados.Length == 0)
         {
             AutoCargarMaterialesPlanetas();
+        }
+
+        if (clipExplosion == null)
+        {
+            clipExplosion = AssetDatabase.LoadAssetAtPath<AudioClip>(
+                "Assets/Ultimate Sound FX Bundle/Sci FI Sounds Pro/Sci Fi Grenade/Sci Fi Grenade 1.wav");
         }
 #endif
     }
@@ -413,11 +412,13 @@ public class GeneradorAsteroides : MonoBehaviour
             ast = nuevoAsteroide.AddComponent<Asteroide>();
         }
 
+        nuevoAsteroide.tag = "Asteroide";
         ast.tipo = config.tipo;
         ast.plano = plano;
         ast.nivelTamanio = 3; // Grande inicial
         ast.velocidadMin = config.velocidadMin;
         ast.velocidadMax = config.velocidadMax;
+        ast.sonidoExplosion = clipExplosion;
         ast.AplicarPropiedadesSegunTipo();
 
         float vel = Random.Range(config.velocidadMin, config.velocidadMax) * multiplicadorVelocidadGlobal;

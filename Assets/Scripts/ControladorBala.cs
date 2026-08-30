@@ -32,4 +32,12 @@ public class ControladorBala : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.GetComponent<Asteroide>() == null)
+            return;
+
+        Destroy(gameObject);
+    }
 }
