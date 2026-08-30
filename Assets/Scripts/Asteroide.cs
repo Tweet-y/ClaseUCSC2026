@@ -27,8 +27,8 @@ public class Asteroide : MonoBehaviour
 
     [Header("Físicas y Movimiento")]
     public PlanoDeJuego plano = PlanoDeJuego.XZ;
-    public float velocidadMin = 200f;
-    public float velocidadMax = 400f;
+    public float velocidadMin = 35f;
+    public float velocidadMax = 65f;
     public float velocidadRotacionMin = 150f;
     public float velocidadRotacionMax = 500f;
 
@@ -129,6 +129,15 @@ public class Asteroide : MonoBehaviour
 
     public void InicializarMovimiento(Vector3 direccion, float velocidad)
     {
+        if (plano == PlanoDeJuego.XZ)
+        {
+            direccion.y = 0f;
+        }
+        else
+        {
+            direccion.z = 0f;
+        }
+
         _direccionMovimiento = direccion.normalized;
         _velocidadActual = velocidad;
         _ejeRotacion = Random.onUnitSphere;
@@ -242,6 +251,14 @@ public class Asteroide : MonoBehaviour
             hijo.prefabsFragmentos = prefabsFragmentos;
             hijo.prefabEfectoExplosion = prefabEfectoExplosion;
             hijo.sonidoExplosion = sonidoExplosion;
+
+            // Conservar la textura / material que tenía el asteroide padre
+            Renderer rendPadre = GetComponentInChildren<Renderer>();
+            Renderer rendHijo = nuevoAsteroideObj.GetComponentInChildren<Renderer>();
+            if (rendPadre != null && rendHijo != null && rendPadre.sharedMaterials != null && rendPadre.sharedMaterials.Length > 0)
+            {
+                rendHijo.sharedMaterials = rendPadre.sharedMaterials;
+            }
 
             // Calcular dirección dispersa en abanico
             float signo = (i % 2 == 0) ? 1f : -1f;

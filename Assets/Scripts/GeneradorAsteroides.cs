@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -10,6 +11,7 @@ using UnityEditor;
 /// - Escala reducida y configurable para que tengan un tamaño adecuado para el juego.
 /// - Generación exclusiva en los 4 bordes del mapa (Superior, Inferior, Izquierdo, Derecho).
 /// - Trayectorias cruzadas hacia el área central de juego.
+/// - Soporte para texturas y materiales variados aleatorios.
 /// </summary>
 public class GeneradorAsteroides : MonoBehaviour
 {
@@ -28,21 +30,25 @@ public class GeneradorAsteroides : MonoBehaviour
     }
 
     [Header("Escala y Velocidad Global")]
-    [Tooltip("Ajusta el tamaño general de todos los asteroides")]
-    [Range(1f, 30f)]
-    public float escalaGeneral = 5.0f;
-    [Tooltip("Multiplicador global para acelerar o frenar todos los asteroides")]
-    [Range(1f, 20f)]
+    [Tooltip("Ajusta el tamaño general de todos los asteroides (aumentado para visibilidad desde la cámara)")]
+    [Range(1f, 50f)]
+    public float escalaGeneral = 10.0f;
+    [Tooltip("Multiplicador global para acelerar o frenar todos los asteroides (ajustable en vivo)")]
+    [Range(0.5f, 10f)]
     public float multiplicadorVelocidadGlobal = 2.0f;
+
+    [Header("Variedad de Texturas y Materiales")]
+    [Tooltip("Colección de materiales que se asignarán de forma aleatoria a los asteroides generados")]
+    public Material[] materialesVariados;
 
     [Header("3 Tipos de Asteroides (Modelos Large)")]
     public TipoAsteroideConfig tipo1_Large01 = new TipoAsteroideConfig
     {
         nombre = "1. Asteroide Grande 01 (Estándar)",
         tipo = Asteroide.TipoDeAsteroide.RocosoEstandar,
-        escalaRelativa = 5.0f,
-        velocidadMin = 250.0f,
-        velocidadMax = 400.0f,
+        escalaRelativa = 7.0f,
+        velocidadMin = 35.0f,
+        velocidadMax = 55.0f,
         probabilidad = 4
     };
 
@@ -50,9 +56,9 @@ public class GeneradorAsteroides : MonoBehaviour
     {
         nombre = "2. Asteroide Grande 02 (Angular/Rápido)",
         tipo = Asteroide.TipoDeAsteroide.CrateresRapido,
-        escalaRelativa = 4.0f,
-        velocidadMin = 350.0f,
-        velocidadMax = 550.0f,
+        escalaRelativa = 6.0f,
+        velocidadMin = 50.0f,
+        velocidadMax = 75.0f,
         probabilidad = 4
     };
 
@@ -60,9 +66,9 @@ public class GeneradorAsteroides : MonoBehaviour
     {
         nombre = "3. Asteroide Grande Agujeros/Pesado",
         tipo = Asteroide.TipoDeAsteroide.GigantePesado,
-        escalaRelativa = 6.0f,
-        velocidadMin = 180.0f,
-        velocidadMax = 300.0f,
+        escalaRelativa = 8.0f,
+        velocidadMin = 25.0f,
+        velocidadMax = 40.0f,
         probabilidad = 3
     };
 
@@ -71,13 +77,14 @@ public class GeneradorAsteroides : MonoBehaviour
     [Tooltip("Objeto plano del escenario. Si está vacío se detecta automáticamente")]
     public Transform planoEspacio;
 
-    [Header("Límites del Mapa")]
-    public float limiteMinX = -20f;
-    public float limiteMaxX = 20f;
-    public float limiteMinZ_Y = -12f;
-    public float limiteMaxZ_Y = 12f;
+    [Header("Límites del Mapa (Calculados desde la Cámara)")]
+    public float limiteMinX = -80f;
+    public float limiteMaxX = 80f;
+    public float limiteMinZ_Y = -45f;
+    public float limiteMaxZ_Y = 45f;
     public float alturaFija = 0f;
-    public float margenBordeSpawn = 30.0f;
+    [Tooltip("Margen justo fuera del marco de la pantalla donde nacen los asteroides")]
+    public float margenBordeSpawn = 8.0f;
 
     [Header("Frecuencia y Cantidad")]
     [Tooltip("Cantidad de asteroides que entran desde los bordes al iniciar")]
@@ -93,6 +100,7 @@ public class GeneradorAsteroides : MonoBehaviour
     {
         AutoCargarPrefabs();
         AutoDetectarPlano();
+        AutoCargarMaterialesPlanetas();
     }
 
     void OnValidate()
@@ -105,12 +113,20 @@ public class GeneradorAsteroides : MonoBehaviour
         {
             AutoDetectarPlano();
         }
+        if (materialesVariados == null || materialesVariados.Length == 0)
+        {
+            AutoCargarMaterialesPlanetas();
+        }
     }
 
     void Awake()
     {
         AutoCargarPrefabs();
         AutoDetectarPlano();
+        if (materialesVariados == null || materialesVariados.Length == 0)
+        {
+            AutoCargarMaterialesPlanetas();
+        }
     }
 
     void Start()
@@ -170,6 +186,47 @@ public class GeneradorAsteroides : MonoBehaviour
             if (tipo3_LargeHoles.prefabBase == null)
                 tipo3_LargeHoles.prefabBase = tipo1_Large01.prefabBase;
         }
+
+        // Cargar materiales de planetas automáticamente si la lista está vacía
+        if (materialesVariados == null || materialesVariados.Length == 0)
+        {
+            AutoCargarMaterialesPlanetas();
+        }
+#endif
+    }
+
+    /// <summary>
+    /// Busca y carga todos los materiales coloridos de la carpeta Planet_Materials
+    /// </summary>
+    [ContextMenu("Cargar Materiales de Planet_Materials")]
+    public void AutoCargarMaterialesPlanetas()
+    {
+#if UNITY_EDITOR
+        List<Material> listaMats = new List<Material>();
+        string[] carpetasBusqueda = new[] { "Assets/PolygonSciFiSpace/Materials/Planet_Materials" };
+        string[] guids = AssetDatabase.FindAssets("t:Material", carpetasBusqueda);
+
+        foreach (var guid in guids)
+        {
+            string ruta = AssetDatabase.GUIDToAssetPath(guid);
+            string rutaMin = ruta.ToLower();
+
+            // Omitir anillos transparentes o máscaras
+            if (rutaMin.Contains("ring") || rutaMin.Contains("cloud") || rutaMin.Contains("mask"))
+                continue;
+
+            Material mat = AssetDatabase.LoadAssetAtPath<Material>(ruta);
+            if (mat != null && !listaMats.Contains(mat))
+            {
+                listaMats.Add(mat);
+            }
+        }
+
+        if (listaMats.Count > 0)
+        {
+            materialesVariados = listaMats.ToArray();
+            EditorUtility.SetDirty(this);
+        }
 #endif
     }
 
@@ -191,6 +248,61 @@ public class GeneradorAsteroides : MonoBehaviour
 
     private void CalcularLimitesDelMapa()
     {
+        if (_cam == null)
+        {
+            _cam = Camera.main;
+            if (_cam == null) _cam = FindFirstObjectByType<Camera>();
+        }
+
+        // 1. Proyectar la vista de la cámara sobre el plano de juego
+        if (_cam != null)
+        {
+            if (plano == Asteroide.PlanoDeJuego.XZ)
+            {
+                Plane suelo = new Plane(Vector3.up, new Vector3(0f, alturaFija, 0f));
+                Ray r00 = _cam.ViewportPointToRay(new Vector3(0f, 0f, 0f));
+                Ray r10 = _cam.ViewportPointToRay(new Vector3(1f, 0f, 0f));
+                Ray r01 = _cam.ViewportPointToRay(new Vector3(0f, 1f, 0f));
+                Ray r11 = _cam.ViewportPointToRay(new Vector3(1f, 1f, 0f));
+
+                float d00, d10, d01, d11;
+                if (suelo.Raycast(r00, out d00) && suelo.Raycast(r10, out d10) &&
+                    suelo.Raycast(r01, out d01) && suelo.Raycast(r11, out d11))
+                {
+                    Vector3 p00 = r00.GetPoint(d00);
+                    Vector3 p10 = r10.GetPoint(d10);
+                    Vector3 p01 = r01.GetPoint(d01);
+                    Vector3 p11 = r11.GetPoint(d11);
+
+                    limiteMinX = Mathf.Min(p00.x, p10.x, p01.x, p11.x);
+                    limiteMaxX = Mathf.Max(p00.x, p10.x, p01.x, p11.x);
+                    limiteMinZ_Y = Mathf.Min(p00.z, p10.z, p01.z, p11.z);
+                    limiteMaxZ_Y = Mathf.Max(p00.z, p10.z, p01.z, p11.z);
+                    return;
+                }
+            }
+            else // XY
+            {
+                Plane planoXY = new Plane(Vector3.forward, new Vector3(0f, 0f, alturaFija));
+                Ray r00 = _cam.ViewportPointToRay(new Vector3(0f, 0f, 0f));
+                Ray r11 = _cam.ViewportPointToRay(new Vector3(1f, 1f, 0f));
+
+                float d00, d11;
+                if (planoXY.Raycast(r00, out d00) && planoXY.Raycast(r11, out d11))
+                {
+                    Vector3 p00 = r00.GetPoint(d00);
+                    Vector3 p11 = r11.GetPoint(d11);
+
+                    limiteMinX = Mathf.Min(p00.x, p11.x);
+                    limiteMaxX = Mathf.Max(p00.x, p11.x);
+                    limiteMinZ_Y = Mathf.Min(p00.y, p11.y);
+                    limiteMaxZ_Y = Mathf.Max(p00.y, p11.y);
+                    return;
+                }
+            }
+        }
+
+        // 2. Si no hay cámara disponible, usar límites del plano
         if (planoEspacio != null)
         {
             Renderer rend = planoEspacio.GetComponent<Renderer>();
@@ -210,42 +322,18 @@ public class GeneradorAsteroides : MonoBehaviour
                     limiteMaxZ_Y = rend.bounds.max.y;
                     alturaFija = rend.bounds.center.z;
                 }
-                return;
-            }
-        }
-
-        // Si no hay plano asignado, calcular a través de la cámara
-        if (_cam != null)
-        {
-            float dist = Mathf.Abs(_cam.transform.position.y);
-            if (dist < 5f) dist = 20f;
-            float alto = Mathf.Tan(_cam.fieldOfView * 0.5f * Mathf.Deg2Rad) * dist;
-            float ancho = alto * _cam.aspect;
-
-            limiteMinX = _cam.transform.position.x - ancho;
-            limiteMaxX = _cam.transform.position.x + ancho;
-
-            if (plano == Asteroide.PlanoDeJuego.XZ)
-            {
-                limiteMinZ_Y = _cam.transform.position.z - alto;
-                limiteMaxZ_Y = _cam.transform.position.z + alto;
-                alturaFija = 0f;
-            }
-            else
-            {
-                limiteMinZ_Y = _cam.transform.position.y - alto;
-                limiteMaxZ_Y = _cam.transform.position.y + alto;
-                alturaFija = 0f;
             }
         }
     }
 
     /// <summary>
-    /// Genera un asteroide exactamente en uno de los 4 bordes exteriores del mapa
-    /// y lo envía con trayectoria hacia el área de juego.
+    /// Genera un asteroide exactamente en uno de los 4 bordes exteriores del marco de la cámara
+    /// y lo envía con trayectoria hacia el área central de juego visible.
     /// </summary>
     public void SpawnAsteroideEnBorde()
     {
+        CalcularLimitesDelMapa();
+
         TipoAsteroideConfig config = SeleccionarTipoAleatorio();
         if (config.prefabBase == null) return;
 
@@ -285,22 +373,26 @@ public class GeneradorAsteroides : MonoBehaviour
             posicionSpawn = new Vector3(posX, posZY, alturaFija);
         }
 
-        // Punto objetivo dentro del área central del mapa
-        float margenInterior = 0.5f;
+        // Punto objetivo dentro de la zona central visible de la pantalla (40% central)
+        float centroX = (limiteMinX + limiteMaxX) * 0.5f;
+        float centroZY = (limiteMinZ_Y + limiteMaxZ_Y) * 0.5f;
+        float radioX = (limiteMaxX - limiteMinX) * 0.35f;
+        float radioZY = (limiteMaxZ_Y - limiteMinZ_Y) * 0.35f;
+
         Vector3 puntoObjetivo;
         if (plano == Asteroide.PlanoDeJuego.XZ)
         {
             puntoObjetivo = new Vector3(
-                Random.Range(limiteMinX * margenInterior, limiteMaxX * margenInterior),
+                Random.Range(centroX - radioX, centroX + radioX),
                 alturaFija,
-                Random.Range(limiteMinZ_Y * margenInterior, limiteMaxZ_Y * margenInterior)
+                Random.Range(centroZY - radioZY, centroZY + radioZY)
             );
         }
         else
         {
             puntoObjetivo = new Vector3(
-                Random.Range(limiteMinX * margenInterior, limiteMaxX * margenInterior),
-                Random.Range(limiteMinZ_Y * margenInterior, limiteMaxZ_Y * margenInterior),
+                Random.Range(centroX - radioX, centroX + radioX),
+                Random.Range(centroZY - radioZY, centroZY + radioZY),
                 alturaFija
             );
         }
@@ -310,9 +402,9 @@ public class GeneradorAsteroides : MonoBehaviour
         // Instanciar
         GameObject nuevoAsteroide = Instantiate(config.prefabBase, posicionSpawn, Random.rotation);
 
-        // Aplicar escala adecuada (no gigantes)
-        Vector3 escalaCalculada = Vector3.one * (escalaGeneral * config.escalaRelativa);
-        nuevoAsteroide.transform.localScale = escalaCalculada;
+        // Aplicar escala adecuada
+        float factorEscala = Mathf.Max(1f, escalaGeneral) * Mathf.Max(1f, config.escalaRelativa);
+        nuevoAsteroide.transform.localScale = Vector3.one * factorEscala;
 
         // Configurar componente Asteroide
         Asteroide ast = nuevoAsteroide.GetComponent<Asteroide>();
@@ -330,6 +422,20 @@ public class GeneradorAsteroides : MonoBehaviour
 
         float vel = Random.Range(config.velocidadMin, config.velocidadMax) * multiplicadorVelocidadGlobal;
         ast.InicializarMovimiento(direccion, vel);
+
+        // Asignar textura/material variado aleatorio
+        if (materialesVariados != null && materialesVariados.Length > 0)
+        {
+            Renderer rend = nuevoAsteroide.GetComponentInChildren<Renderer>();
+            if (rend != null)
+            {
+                Material matElegido = materialesVariados[Random.Range(0, materialesVariados.Length)];
+                if (matElegido != null)
+                {
+                    rend.sharedMaterial = matElegido;
+                }
+            }
+        }
 
         // Configurar componente de envoltorio con los límites exactos
         EnvoltorioEspacio wrap = nuevoAsteroide.GetComponent<EnvoltorioEspacio>();
@@ -368,6 +474,16 @@ public class GeneradorAsteroides : MonoBehaviour
             if (ast.transform.localScale.x > 0.5f)
             {
                 ast.transform.localScale = Vector3.one * escalaGeneral;
+            }
+
+            // Asignar material de planeta variado
+            if (materialesVariados != null && materialesVariados.Length > 0)
+            {
+                Renderer rend = ast.GetComponentInChildren<Renderer>();
+                if (rend != null)
+                {
+                    rend.sharedMaterial = materialesVariados[Random.Range(0, materialesVariados.Length)];
+                }
             }
 
             ast.plano = plano;
