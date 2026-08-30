@@ -2,25 +2,34 @@ using UnityEngine;
 
 public class ControladorBala : MonoBehaviour
 {
-    public float tiempoVida = 1f;
+    public float tiempoVida = 2f;
     public float timer = 0f;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
-        
+        Rigidbody cuerpo = GetComponent<Rigidbody>();
+        if (cuerpo != null)
+        {
+            cuerpo.useGravity = false;
+            cuerpo.constraints = RigidbodyConstraints.FreezePositionY
+                | RigidbodyConstraints.FreezeRotationX
+                | RigidbodyConstraints.FreezeRotationZ;
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
         timer += Time.deltaTime;
 
-        if(timer >= tiempoVida)
-            GameObject.Destroy(this.gameObject);
+        if (timer >= tiempoVida)
+            Destroy(gameObject);
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        GameObject.Destroy(this.gameObject);
+        if (collision.gameObject.GetComponent<Asteroide>() == null)
+            return;
+
+        Destroy(gameObject);
     }
 }
