@@ -14,6 +14,7 @@ public class ControladorJuego : MonoBehaviour
     public TMP_Text textoVidas;
     public TMP_Text textoPuntajeFinal;
     public GameObject panelFin;
+    public Button botonReintentar;
     public ControladorNave nave;
     public AudioClip clipMusica;
     public float volumenMusica = 0.2f;
@@ -39,10 +40,14 @@ public class ControladorJuego : MonoBehaviour
         if (string.IsNullOrWhiteSpace(nombreJugador))
             nombreJugador = "Jugador";
 
-        CrearHUDSiFalta();
         ActualizarHUD();
         if (panelFin != null)
             panelFin.SetActive(false);
+        if (botonReintentar != null)
+        {
+            botonReintentar.onClick.RemoveListener(Reintentar);
+            botonReintentar.onClick.AddListener(Reintentar);
+        }
     }
 
     public void SumarPuntos(int cantidad)
@@ -117,7 +122,7 @@ public class ControladorJuego : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    void ActualizarHUD()
+    public void ActualizarHUD()
     {
         if (textoNombre != null)
             textoNombre.text = nombreJugador;
@@ -150,87 +155,6 @@ public class ControladorJuego : MonoBehaviour
         musica.volume = volumenMusica;
         if (musica.clip != null && !musica.isPlaying)
             musica.Play();
-    }
-
-    void CrearHUDSiFalta()
-    {
-        if (textoPuntaje != null && textoVidas != null && panelFin != null)
-            return;
-
-        if (FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
-        {
-            GameObject evento = new GameObject("EventSystem");
-            evento.AddComponent<UnityEngine.EventSystems.EventSystem>();
-            evento.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
-        }
-
-        GameObject canvasObj = new GameObject("CanvasHUD");
-        Canvas canvas = canvasObj.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvasObj.AddComponent<CanvasScaler>();
-        canvasObj.AddComponent<GraphicRaycaster>();
-
-        CanvasScaler scaler = canvasObj.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-
-        textoNombre = CrearTextoAnclado(canvasObj.transform, "textoNombre", "Jugador", new Vector2(0f, 1f), new Vector2(40f, -20f), TextAlignmentOptions.Left);
-        textoPuntaje = CrearTextoAnclado(canvasObj.transform, "textoPuntaje", "Puntaje: 0", new Vector2(0f, 1f), new Vector2(40f, -70f), TextAlignmentOptions.Left);
-        textoPuntaje.fontSize = 40f;
-        textoVidas = CrearTextoAnclado(canvasObj.transform, "textoVidas", "Vidas: 3", new Vector2(1f, 1f), new Vector2(-40f, -20f), TextAlignmentOptions.Right);
-
-        panelFin = new GameObject("panelFin");
-        panelFin.transform.SetParent(canvasObj.transform, false);
-        Image fondo = panelFin.AddComponent<Image>();
-        fondo.color = new Color(0f, 0f, 0f, 0.65f);
-        RectTransform rectPanel = panelFin.GetComponent<RectTransform>();
-        rectPanel.anchorMin = Vector2.zero;
-        rectPanel.anchorMax = Vector2.one;
-        rectPanel.offsetMin = Vector2.zero;
-        rectPanel.offsetMax = Vector2.zero;
-
-        CrearTexto(panelFin.transform, "textoFin", "Game Over", new Vector2(0f, 50f), TextAlignmentOptions.Center).fontSize = 56f;
-        textoPuntajeFinal = CrearTexto(panelFin.transform, "textoPuntajeFinal", "Puntaje: 0", new Vector2(0f, -10f), TextAlignmentOptions.Center);
-        textoPuntajeFinal.fontSize = 36f;
-
-        GameObject botonObj = new GameObject("botonReintentar");
-        botonObj.transform.SetParent(panelFin.transform, false);
-        Image imagenBoton = botonObj.AddComponent<Image>();
-        imagenBoton.color = new Color(0.15f, 0.55f, 0.85f, 1f);
-        Button boton = botonObj.AddComponent<Button>();
-        boton.onClick.AddListener(Reintentar);
-        RectTransform rectBoton = botonObj.GetComponent<RectTransform>();
-        rectBoton.sizeDelta = new Vector2(220f, 50f);
-        rectBoton.anchoredPosition = new Vector2(0f, -80f);
-
-        TMP_Text textoBoton = CrearTexto(botonObj.transform, "textoReintentar", "Reintentar", Vector2.zero, TextAlignmentOptions.Center);
-        textoBoton.fontSize = 28f;
-    }
-
-    TMP_Text CrearTexto(Transform padre, string nombre, string contenido, Vector2 posicion, TextAlignmentOptions alineacion)
-    {
-        GameObject obj = new GameObject(nombre);
-        obj.transform.SetParent(padre, false);
-        TMP_Text texto = obj.AddComponent<TextMeshProUGUI>();
-        texto.text = contenido;
-        texto.fontSize = 32f;
-        texto.alignment = alineacion;
-        texto.color = Color.white;
-        RectTransform rect = obj.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(500f, 60f);
-        rect.anchoredPosition = posicion;
-        return texto;
-    }
-
-    TMP_Text CrearTextoAnclado(Transform padre, string nombre, string contenido, Vector2 ancla, Vector2 posicion, TextAlignmentOptions alineacion)
-    {
-        TMP_Text texto = CrearTexto(padre, nombre, contenido, posicion, alineacion);
-        RectTransform rect = texto.GetComponent<RectTransform>();
-        rect.anchorMin = ancla;
-        rect.anchorMax = ancla;
-        rect.pivot = ancla;
-        rect.anchoredPosition = posicion;
-        return texto;
     }
 
     AudioClip CargarClip(string ruta)

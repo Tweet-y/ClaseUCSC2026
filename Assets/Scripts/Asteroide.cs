@@ -40,6 +40,8 @@ public class Asteroide : MonoBehaviour
 
     [Header("Efectos y Audio")]
     public GameObject prefabEfectoExplosion;
+    public float multiplicadorEscalaEfecto = 1f;
+    public float duracionEfectoExplosion = 0.5f;
     public AudioClip sonidoExplosion;
     [Range(0f, 1f)]
     public float volumenExplosion = 0.9f;
@@ -222,7 +224,9 @@ public class Asteroide : MonoBehaviour
 
         if (prefabEfectoExplosion != null)
         {
-            Instantiate(prefabEfectoExplosion, transform.position, Quaternion.identity);
+            GameObject efecto = Instantiate(prefabEfectoExplosion, transform.position, Quaternion.identity);
+            efecto.transform.localScale = transform.localScale * multiplicadorEscalaEfecto;
+            Destroy(efecto, duracionEfectoExplosion);
         }
 
         if (ControladorJuego.instancia != null)
@@ -323,6 +327,8 @@ public class Asteroide : MonoBehaviour
             hijo.plano = plano;
             hijo.prefabsFragmentos = prefabsFragmentos;
             hijo.prefabEfectoExplosion = prefabEfectoExplosion;
+            hijo.multiplicadorEscalaEfecto = multiplicadorEscalaEfecto;
+            hijo.duracionEfectoExplosion = duracionEfectoExplosion;
             hijo.sonidoExplosion = sonidoExplosion;
             hijo.volumenExplosion = volumenExplosion;
             hijo.pitchMin = pitchMin;

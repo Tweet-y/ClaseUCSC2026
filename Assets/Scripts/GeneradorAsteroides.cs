@@ -33,8 +33,9 @@ public class GeneradorAsteroides : MonoBehaviour
     [Tooltip("Colección de materiales que se asignarán de forma aleatoria a los asteroides generados")]
     public Material[] materialesVariados;
 
-    [Header("Sonido de Explosión de Asteroides")]
+    [Header("Sonido y VFX de Explosión de Asteroides")]
     public AudioClip clipExplosion;
+    public GameObject prefabEfectoExplosion;
     [Range(0f, 1f)]
     public float volumenExplosion = 0.9f;
     public float pitchMinExplosion = 0.7f;
@@ -204,6 +205,12 @@ public class GeneradorAsteroides : MonoBehaviour
         {
             clipExplosion = AssetDatabase.LoadAssetAtPath<AudioClip>(
                 "Assets/Ultimate Sound FX Bundle/Sci FI Sounds Pro/Sci Fi Grenade/Sci Fi Grenade 1.wav");
+        }
+
+        if (prefabEfectoExplosion == null)
+        {
+            prefabEfectoExplosion = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/PolygonSciFiSpace/Prefabs/FX/FX_Explosion.prefab");
         }
 #endif
     }
@@ -433,6 +440,7 @@ public class GeneradorAsteroides : MonoBehaviour
         ast.velocidadMin = config.velocidadMin;
         ast.velocidadMax = config.velocidadMax;
         ast.sonidoExplosion = clipExplosion;
+        ast.prefabEfectoExplosion = prefabEfectoExplosion;
         ast.volumenExplosion = volumenExplosion;
         ast.pitchMin = pitchMinExplosion;
         ast.pitchMax = pitchMaxExplosion;
@@ -507,6 +515,7 @@ public class GeneradorAsteroides : MonoBehaviour
 
             ast.plano = plano;
             ast.sonidoExplosion = clipExplosion;
+            ast.prefabEfectoExplosion = prefabEfectoExplosion;
             ast.volumenExplosion = volumenExplosion;
             ast.pitchMin = pitchMinExplosion;
             ast.pitchMax = pitchMaxExplosion;
